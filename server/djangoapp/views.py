@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-# from .models import related models
-# from .restapis import related methods
+from .models import CarModel
+from .restapis import get_dealer_by_id, get_dealers_from_cf, get_dealers_by_state, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.shortcuts import render
@@ -97,6 +97,8 @@ def registration_request(request):
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
     context = {}
+    url = 'https://us-south.functions.appdomain.cloud/api/v1/web/0700de7b-29d5-4910-ad14-80bfb2cef3c0/dealership-package/get-dealership'
+    context["dealership"] = get_dealers_from_cf(url)
     if request.method == "GET":
         return render(request, 'djangoapp/index.html', context)
 
@@ -105,7 +107,7 @@ def get_dealerships(request):
 def get_dealer_details(request, dealer_id):
     context = {}
     if request.method == "GET":
-        url = 'https://9bebcb01.eu-de.apigw.appdomain.cloud/api/review'
+        url = 'https://us-south.functions.appdomain.cloud/api/v1/web/0700de7b-29d5-4910-ad14-80bfb2cef3c0/dealership-package/get-review'
         reviews = get_dealer_reviews_from_cf(url, dealer_id=dealer_id)
         context = {
             "reviews":  reviews, 

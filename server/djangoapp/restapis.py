@@ -82,10 +82,13 @@ def get_dealers_from_cf(url):
     results = []
     json_result = get_request(url)
     # Retrieve the dealer data from the response
-    dealers = json_result["body"]["rows"]
+    dealers = json_result["rows"]
+    #print(dealers)
     # For each dealer in the response
     for dealer in dealers:
         # Get its data in `doc` object
+        # print(dealer)
+        # break
         dealer_doc = dealer["doc"]
         # Create a CarDealer object with values in `doc` object
         dealer_obj = CarDealer(address=dealer_doc["address"], city=dealer_doc["city"], full_name=dealer_doc["full_name"],
@@ -93,7 +96,7 @@ def get_dealers_from_cf(url):
                                short_name=dealer_doc["short_name"],
                                st=dealer_doc["st"], state=dealer_doc["state"], zip=dealer_doc["zip"])
         results.append(dealer_obj)
-
+    
     return results
 
 
@@ -140,7 +143,8 @@ def get_dealer_reviews_from_cf(url, dealer_id):
 
     if json_result:
         # Get all review data from the response
-        reviews = json_result["body"]["data"]["docs"]
+        #print(json_result)
+        reviews = json_result["data"]["docs"]
         # For every review in the response
         for review in reviews:
             # Create a DealerReview object from the data
