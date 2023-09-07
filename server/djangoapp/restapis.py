@@ -8,7 +8,7 @@ from .models import CarDealer, DealerReview
 from decouple import config
 from ibm_watson import NaturalLanguageUnderstandingV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from ibm_watson.natural_language_understanding_v1 import Features, SentimentOptions
+from ibm_watson.natural_language_understanding_v1 import Features, SentimentOptions, EntitiesOptions, KeywordsOptions
 
 
 # Create a `get_request` to make HTTP GET requests
@@ -105,9 +105,9 @@ def get_dealers_from_cf(url):
 def get_dealer_by_id(url, dealer_id):
     # Call get_request with the dealer_id param
     json_result = get_request(url, dealerId=dealer_id)
-
     # Create a CarDealer object from response
-    dealer = json_result["entries"][0]
+    dealer = json_result["docs"][0]
+    
     dealer_obj = CarDealer(address=dealer["address"], city=dealer["city"], full_name=dealer["full_name"],
                            id=dealer["id"], lat=dealer["lat"], long=dealer["long"],
                            short_name=dealer["short_name"],
@@ -187,19 +187,18 @@ def get_dealer_reviews_from_cf(url, dealer_id):
 # Calls the Watson NLU API and analyses the sentiment of a review
 def analyze_review_sentiments(review_text):
     # Watson NLU configuration
-    try:
-        if os.environ['env_type'] == 'PRODUCTION':
-            url = os.environ['WATSON_NLU_URL']
-            api_key = os.environ["WATSON_NLU_API_KEY"]
-    except KeyError:
-        url = config('WATSON_NLU_URL')
-        api_key = config('WATSON_NLU_API_KEY')
+    # try:
+    #     if os.environ['env_type'] == 'PRODUCTION':
+    #         url = os.environ['WATSON_NLU_URL']
+    #         api_key = os.environ["WATSON_NLU_API_KEY"]
+    # except KeyError:
+    #     url = config('WATSON_NLU_URL')
+    #     api_key = config('WATSON_NLU_API_KEY')
 
     version = '2021-08-01'
-    authenticator = IAMAuthenticator(api_key)
-    nlu = NaturalLanguageUnderstandingV1(
-        version=version, authenticator=authenticator)
-    nlu.set_service_url(url)
+    authenticator = IAMAuthenticator("0BTy5aJq8i6FPhJQKkCWuU0ZW5oVSpDNokK75vwUc6yv")
+    nlu = NaturalLanguageUnderstandingV1(version='2022-04-07', authenticator=authenticator)
+    nlu.set_service_url('https://api.au-syd.natural-language-understanding.watson.cloud.ibm.com/instances/838aaa78-e8e5-4b31-8034-4d7f9b979940')
 
     # get sentiment of the review
     try:
